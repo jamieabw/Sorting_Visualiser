@@ -43,7 +43,7 @@ class App(tk.Tk):
 
     def createSettings(self):
         tk.Label(self.settingsFrame, text="Number Of Bars:", bg="grey").place(relx=0.5, rely=0.01, anchor="center")
-        self.barsSlider = tk.Scale(self.settingsFrame, from_=0, to=300, orient=tk.HORIZONTAL, command=self.createBars, bg="grey", bd=0, highlightthickness=0)
+        self.barsSlider = tk.Scale(self.settingsFrame, from_=0, to=500, orient=tk.HORIZONTAL, command=self.createBars, bg="grey", bd=0, highlightthickness=0)
         self.barsSlider.set(DEFAULT_BAR_COUNT)
         self.barsSlider.place(relx=0, rely=0.02, anchor="nw", relwidth=1)
         self.sortButton = tk.Button(self.settingsFrame, text="Sort", bg="grey", command=self.startSort)
@@ -70,7 +70,6 @@ class App(tk.Tk):
 
 
     def startSort(self):
-        # this is currently a placeholder, colouring and audio are not implemented, WIP
         match self.sortSelected.get():
             case "Bubble Sort":
                 self.bars = SortingAlgorithms.bubbleSort(self, self.bars, self.speed)
@@ -79,7 +78,7 @@ class App(tk.Tk):
             case "Bogo Sort":
                 self.bars = SortingAlgorithms.bogoSort(self, self.bars, self.speed)
             case "Merge Sort":
-                pass
+                self.bars = SortingAlgorithms.mergeSort(self, self.bars, self.speed)
             case "Quick Sort":
                 pass
 
