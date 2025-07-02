@@ -1,6 +1,8 @@
 import random
 DEFAULT_HEIGHT_MULTIPLIER = 20
 class SortingAlgorithms:
+    quickSortBars = None
+    flag = False
     # the drawing and colouring aspects can probably be put in their own class, WIP 
     @staticmethod
     def bubbleSort(root, bars, speed, i=0, j=0):
@@ -125,10 +127,99 @@ class SortingAlgorithms:
         
         
 
-    @staticmethod
-    def quickSort():
-        pass
+    """flag is used to determine when the sort is finished due it being recursive in nature so a pain to deal with visualising, if flag
+    isnt used then endSort() will be called as many times as the function unwinds."""
 
+    @staticmethod
+    def startQuickSort(root, bars, speed, low, high):
+        SortingAlgorithms.flag = False
+        return SortingAlgorithms.quickSort(root, bars, speed, low, high)
+        
+    @staticmethod
+    def quickSort(root, bars, speed, low, high):
+        def partition(bars, low, high):
+            pivot = bars[high]
+            i = low - 1
+            root.after(speed)
+            return partitionStep(bars, low, high, pivot, i)
+        def partitionStep(bars, low, high, pivot, i, j=-1):
+            if j == -1:
+                j = low
+            if j == high:
+                bars[i+1], bars[high] = bars[high], bars[i+1]
+                return i + 1
+            if bars[j].height < pivot.height:
+                i += 1
+                bars[i], bars[j] = bars[j], bars[i]
+                root.after(speed)
+            if not SortingAlgorithms.flag:
+                root.sortingArea.delete("all")
+                for idx, bar in enumerate(bars):
+                    root.sortingArea.create_rectangle(
+                            idx * bar.width,
+                            root.sortingArea.winfo_height() - bar.height,
+                            idx * bar.width + bar.width,
+                            root.sortingArea.winfo_height(),
+                            tags=(f"{bar.height / DEFAULT_HEIGHT_MULTIPLIER}", "RECT"),
+                            fill="white"
+                        )
+                root.sortingArea.itemconfig(f"{bars[i].height / DEFAULT_HEIGHT_MULTIPLIER}", fill="red")
+                root.sortingArea.itemconfig(f"{bars[j].height / DEFAULT_HEIGHT_MULTIPLIER}", fill="red")
+                root.sortingArea.itemconfig(f"{pivot.height / DEFAULT_HEIGHT_MULTIPLIER}", fill="blue")
+            root.sortingArea.update()
+            return partitionStep(bars, low, high, pivot, i, j+1)
+        if low < high:
+            pivot = partition(bars, low, high)
+            if not SortingAlgorithms.flag:
+                root.sortingArea.delete("all")
+                for idx, bar in enumerate(bars):
+                    root.sortingArea.create_rectangle(
+                            idx * bar.width,
+                            root.sortingArea.winfo_height() - bar.height,
+                            idx * bar.width + bar.width,
+                            root.sortingArea.winfo_height(),
+                            tags=(f"{bar.height / DEFAULT_HEIGHT_MULTIPLIER}", "RECT"),
+                            fill="white"
+                        )
+            root.sortingArea.update()
+            root.after(speed, lambda : SortingAlgorithms.quickSort(root, bars, speed, low, pivot -1))
+            root.after(speed, lambda : SortingAlgorithms.quickSort(root, bars, speed, pivot+1, high))
+        if not SortingAlgorithms.flag:
+            root.sortingArea.delete("all")
+            for idx, bar in enumerate(bars):
+                    root.sortingArea.create_rectangle(
+                            idx * bar.width,
+                            root.sortingArea.winfo_height() - bar.height,
+                            idx * bar.width + bar.width,
+                            root.sortingArea.winfo_height(),
+                            tags=(f"{bar.height / DEFAULT_HEIGHT_MULTIPLIER}", "RECT"),
+                            fill="white"
+                        )
+        if SortingAlgorithms.flag:
+            return
+        sorted = True
+        if bars is None:
+            return
+        for i in range(len(bars)-1):
+            if bars[i].height > bars[i+1].height:
+                sorted = False
+
+        if sorted and not SortingAlgorithms.flag:
+            SortingAlgorithms.flag = True
+            root.sortingArea.delete("all")
+            for idx, bar in enumerate(bars):
+                root.sortingArea.create_rectangle(
+                        idx * bar.width,
+                        root.sortingArea.winfo_height() - bar.height,
+                        idx * bar.width + bar.width,
+                        root.sortingArea.winfo_height(),
+                        tags=(f"{bar.height / DEFAULT_HEIGHT_MULTIPLIER}", "RECT"),
+                        fill="white"
+                    )
+                root.sortingArea.update()
+            SortingAlgorithms.quickSortBars = bars
+            SortingAlgorithms.endSort(root, bars, speed)
+        
     @staticmethod
     def bogoSort(root, bars, speed):
         sorted = False
@@ -158,10 +249,16 @@ class SortingAlgorithms:
 
     @staticmethod
     def endSort(root, bars, speed):
+        for i in range(len(bars)-1):
+            if bars[i].height > bars[i+1].height:
+                print(bars[i].height)
+                return
+        root.sortingArea.update()
+        root.update_idletasks()
         for i in range(len(bars)):  
             root.sortingArea.itemconfig(f"{bars[i].height / DEFAULT_HEIGHT_MULTIPLIER}", fill="green")
             root.sortingArea.update()
-            root.after(10)
+            root.after(speed)
         root.after(1000)
         root.sortingArea.itemconfig("RECT", fill="white")
         return bars

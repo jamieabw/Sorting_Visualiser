@@ -80,7 +80,7 @@ class App(tk.Tk):
             case "Merge Sort":
                 self.bars = SortingAlgorithms.mergeSort(self, self.bars, self.speed)
             case "Quick Sort":
-                pass
+                self.bars = SortingAlgorithms.startQuickSort(self, self.bars, self.speed, 0, len(self.bars) -1)
 
         
 
