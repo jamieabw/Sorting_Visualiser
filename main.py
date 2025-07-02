@@ -55,6 +55,7 @@ class App(tk.Tk):
         self.speedSlider = tk.Scale(self.settingsFrame, from_=1, to=1000, orient="horizontal", command=self.setSpeed, bg="grey", bd=0, highlightthickness=0)
         self.speedSlider.place(relx=0,
                                 rely=0.08 + (self.barsSlider.winfo_height() / self.settingsFrame.winfo_height()), anchor="nw", relwidth=1)
+        self.speedSlider.set(100)
         
 
         self.sortSelected = tk.StringVar()
